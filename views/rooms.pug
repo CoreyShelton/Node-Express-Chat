@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  - function allTitleCase(inStr) { return inStr.replace(/\w\S*/g, function(tStr) { return tStr.charAt(0).toUpperCase() + tStr.substr(1).toLowerCase(); }); }
+
+  h1 Chat Rooms from jade!!!:
+
+  // Outputs rooms as JSON
+  //= JSON.stringify(rooms)
+
+  a.btn.btn-primary(href="/admin/rooms/add") Add New Room
+
+  table.table.table-striped
+    thead
+      tr
+        th Name
+        th Id
+    tbody
+      each room in rooms
+        tr
+          td(style="width: 50px;")
+            a(href="/admin/rooms/delete/" + room.id, class="btn btn-primary")
+              span(style="color:#fff", class="glyphicon glyphicon-remove")
+          td #{allTitleCase(room.name)}
+          td(style="width: 50px;")
+            a(href="/admin/rooms/edit/" + room.id)
+              span.glyphicon.glyphicon-pencil
+          td #{room.id}

@@ -1,0 +1,7 @@
+extends layout
+
+block content
+    - function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); };
+    - function allTitleCase(inStr) { return inStr.replace(/\w\S*/g, function(tStr) { return tStr.charAt(0).toUpperCase() + tStr.substr(1).toLowerCase(); }); }
+    h1 Hello from index.html
+    h3 #{allTitleCase(title)}
