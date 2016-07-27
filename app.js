@@ -23,7 +23,7 @@ var _ = require("lodash");
  * availabe under the req.body property.
  *
  * FYI, middleware can really be thought of as
- * functions that we can use to manipulate the request and response 
+ * functions that we can use to manipulate the request and response
  * Ref: https://www.npmjs.com/package/body-parser
  */
 
@@ -67,10 +67,28 @@ app.use(express.static("node_modules/bootstrap/dist"));
  *
  * Ref: https://www.npmjs.com/package/body-parser#bodyparserurlencodedoptions
  */
- app.use(bodyParser.urlencoded({
+app.use(bodyParser.urlencoded({
     extended: true
   })
 );
+
+/**
+ * To create our own middleware we can use app.use()
+ * We'll also take in the request `req` and response `res` object
+ * We'll also take in a third option which is the `next` function,
+ * the `next function is a function you can invoke which will invoke
+ * the "next" or remainder of our pipeline
+ */
+app.use(function(req,res,next){
+  // just output the url the request is coming from
+  console.log("Incoming request" + req.url);
+
+  /**
+   * Call the next function when you're ready
+   * to pass of the request to the rest of your pipeline
+   */
+  next();
+});
 
 /**
  * Home Route:
@@ -91,6 +109,7 @@ app.get('/', function (req, res) {
  */
 var adminRouter = require("./admin");
 app.use("/admin", adminRouter);
+
 /**
  * Binds and listens for connections on the specified host and port.
  * This method is identical to Node’s http.Server.listen().
