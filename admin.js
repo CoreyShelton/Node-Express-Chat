@@ -109,9 +109,10 @@ router.route('/rooms/add')
   });
 
 router.route('/rooms/edit/:id')
-
-  .get(function(req, res) {
+  .all(function(req, res, next){
     /**
+     * This is middleware used to get the room ID
+     *
      * Rooms ADMIN delete chat room route:
      * By adding a colon ":" in front of "id"
      * we are defining a route parameter named "id"
@@ -151,7 +152,17 @@ router.route('/rooms/edit/:id')
       res.sendStatus(404);
       return;
     }
+    /**
+     * Use the local property of the response
+     * to pass the same object that the `get` and `post`
+     * routers want to use, which in this case is `room`
+     */
+    res.local.room = room;
 
+    // next() passes on to the `get` and `post` routes
+    next();
+  })
+  .get(function(req, res) {
     /**
      * Render an 'edit' view
      * Add an options object, so that we can pass the room
@@ -161,53 +172,14 @@ router.route('/rooms/edit/:id')
      * then pass to it data that contains the room name
      * of the room we're currently editing
      */
-    res.render("edit", {room});
+    res.render("edit");
   })
-
   .post(function(req, res) {
-    /**
-     * This route actually updates the room name
-     * when the "Save Chat Room" button is clicked
-     *
-     * The url's route param named "id"
-     * will then be parsed out and made available
-     * on the request object via a params object.
-     * A property will then be created named "id",
-     * since thats the name of the param that we
-     * specified in the url's route parameter.
-     *
-     * This will become  our "roomID" variable
-     */
-    var roomID = req.params.id
-
-    /**
-     * Use functionality thats exported using the lodash module
-     * Use the `_.find` functionality, which takes a collection (array)
-     * - Passes an array as the first parameter
-     * - Passes a function that can filter and find the item in the array
-     *   that we want to edit.
-     * In our case we want to find the room
-     * that matches the roomID route parameter being passed in.
-     *
-     * The first item that matches this predicate: r => r.id === roomID
-     * will be returned to us and we'll capture that in a new `room` variable
-     */
-    var room = _.find(rooms, r => r.id === roomID);
-
-    /**
-     * Check if the room exists and if it doesn't then
-     * display a 404 error message
-     */
-    if(!room) {
-      res.sendStatus(404);
-      return;
-    }
-
     /**
      * This changes the room's name
      * to the room name that you updated it to
      */
-    room.name = req.body.name;
+    res.locals.room.name = req.body.name;
 
     /**
      * Redirect back to the main chat rooms page
